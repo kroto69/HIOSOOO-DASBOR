@@ -4,8 +4,14 @@ HIOSO OLT management REST API with support for multiple devices.
 
 ## Dashboard Preview
 
-![Dashboard Preview](frontend/src/images/images1.jpg)
-![Dashboard Preview 2](frontend/src/images/images2.jpg)
+<p align="center">
+  <img src="frontend/src/images/images1.jpg" alt="Dashboard Preview 1" width="49%" />
+  <img src="frontend/src/images/images2.jpg" alt="Dashboard Preview 2" width="49%" />
+</p>
+<p align="center">
+  <img src="frontend/src/images/images3.jpg" alt="Dashboard Preview 3" width="49%" />
+  <img src="frontend/src/images/images4.jpg" alt="Dashboard Preview 4" width="49%" />
+</p>
 
 ## Features
 
