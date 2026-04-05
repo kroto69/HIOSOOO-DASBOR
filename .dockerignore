@@ -1,0 +1,12 @@
+.git
+.gitignore
+.default-baseline
+olt-api
+olt-api.db
+logs/
+frontend/node_modules/
+frontend/dist/
+node_modules/
+tmp/
+*.log
+*.db

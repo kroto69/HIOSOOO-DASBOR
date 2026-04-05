@@ -1,0 +1,43 @@
+FROM golang:1.21-bookworm AS builder
+
+ENV CGO_ENABLED=1
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
+
+COPY . .
+
+RUN go build -o /out/olt-api ./cmd/server
+
+FROM debian:bookworm-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates libsqlite3-0 \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --uid 10001 --shell /usr/sbin/nologin appuser
+
+WORKDIR /app
+
+COPY --from=builder /out/olt-api /usr/local/bin/olt-api
+COPY --from=builder /src/configs ./configs
+
+RUN mkdir -p /data/logs /app/configs \
+    && chown -R appuser:appuser /app /data
+
+ENV SERVER_HOST=0.0.0.0 \
+    SERVER_PORT=3000 \
+    DATABASE_PATH=/data/olt-api.db \
+    LOGGING_LEVEL=info \
+    LOGGING_FILE=/data/logs/app.log
+
+USER appuser
+
+EXPOSE 3000
+
+CMD ["olt-api"]

@@ -1,0 +1,37 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 3000
+      DATABASE_PATH: ${DATABASE_PATH:-/data/olt-api.db}
+      CACHE_ENABLED: ${CACHE_ENABLED:-true}
+      CACHE_TTL: ${CACHE_TTL:-60s}
+      SCRAPER_TIMEOUT: ${SCRAPER_TIMEOUT:-30s}
+      SCRAPER_MAX_WORKERS: ${SCRAPER_MAX_WORKERS:-200}
+      LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
+      LOGGING_FILE: ${LOGGING_FILE:-/data/logs/app.log}
+      AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:?AUTH_JWT_SECRET is required in production}
+      AUTH_ACCESS_TOKEN_TTL: ${AUTH_ACCESS_TOKEN_TTL:-12h}
+      AUTH_INITIAL_USERNAME: ${AUTH_INITIAL_USERNAME:?AUTH_INITIAL_USERNAME is required in production}
+      AUTH_INITIAL_PASSWORD: ${AUTH_INITIAL_PASSWORD:?AUTH_INITIAL_PASSWORD is required in production}
+    volumes:
+      - backend_data:/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/}
+    depends_on:
+      - backend
+    ports:
+      - "${APP_PORT:-8080}:80"
+    restart: unless-stopped
+
+volumes:
+  backend_data:
